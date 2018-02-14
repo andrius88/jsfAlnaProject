@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+<h:head>
+  <title>Student list, student input form</title>
+</h:head>
+
+<h:body>
+
+    <p:ajaxStatus style="display:block;margin-bottom:2em;height:24px;">
+        <f:facet name="default">
+            <h3><h:outputText value="Ajax Status: StandBy" /></h3>
+        </f:facet>
+
+        <f:facet name="start">
+            <h3><h:outputText value="Ajax Status: Working..." /></h3>
+        </f:facet>
+
+        <f:facet name="complete">
+            <h3><h:outputText value="Ajax Status: Completed" /></h3>
+        </f:facet>
+    </p:ajaxStatus>
+
+    <h2><h:outputText value="#{msg['studentList.label']}" /></h2>
+
+    <h:form id="studentTableForm" rendered="#{not empty simpleCrudBean.studentList}">
+
+        <h:panelGrid columns="2">
+            <h:outputText value="#{msg['language.label']}:" style="font-size: x-large; font-weight: bold"/>
+            <p:selectOneMenu value="#{language.localeCode}"
+                             valueChangeListener="#{language.countryLocaleCodeChanged}"
+                             onchange="submit()">
+                <f:selectItems value="#{language.countriesInMap}" />
+            </p:selectOneMenu>
+        </h:panelGrid>
+
+        <p:dataTable id="studentTable" value="#{simpleCrudBean.studentList}" var="item" binding="#{table}"
+                     paginator="true" rows="10"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15">
+            <p:column headerText="#{msg['studentTable.column.rowIndex']}">
+                <h:outputText value="#{table.rowIndex+1}" />
+            </p:column>
+            <p:column headerText="#{msg['studentTable.column.ID']}" sortBy="#{item.id}">
+                <h:outputText value="#{item.id}" />
+            </p:column>
+            <p:column headerText="#{msg['studentTable.column.name']}" sortBy="#{item.firstName}">
+                <h:outputText value="#{item.firstName}" />
+            </p:column>
+            <p:column headerText="#{msg['studentTable.column.surname']}" sortBy="#{item.lastName}">
+                <h:outputText value="#{item.lastName}" />
+            </p:column>
+            <p:column headerText="#{msg['studentTable.column.birthDate']}" sortBy="#{item.birthDateAsStr}" style="text-align: center">
+                <h:outputText value="#{item.birthDateAsStr}" />
+            </p:column>
+            <p:column style="text-align: center">
+                <f:facet name="header"><h:outputText value="#{msg['studentTable.column.edit']}" /></f:facet>
+                <p:commandButton value="#{msg['button.edit']}" actionListener="#{simpleCrudBean.edit(item)}" ajax="true"
+                                 update="dialogForm" oncomplete="PF('studentDialog').show();"
+                                 style="width:115px;height:35px">
+                </p:commandButton>
+            </p:column>
+            <p:column style="text-align: center">
+                <f:facet name="header"><h:outputText value="#{msg['studentTable.column.delete']}" /></f:facet>
+                <p:commandButton id="deleteButton" value="#{msg['button.delete']}" actionListener="#{simpleCrudBean.delete(item)}"
+                                 ajax="true"
+                                 update="studentTableForm:studentTable"
+                                 style="width:115px;height:35px">
+                <p:confirm header="#{msg['confirmation.header']}" message="#{msg['confirmation.msg']} #{item.id} ?" icon="ui-icon-alert" />
+                <p:ajax render="studentTableForm:studentTable" />
+            </p:commandButton>
+            </p:column>
+
+        </p:dataTable>
+    </h:form>
+
+    <br/><br/>
+
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" closable="false">
+        <p:commandButton value="#{msg['button.yes']}" type="button" styleClass="ui-confirmdialog-yes"  />
+        <p:commandButton value="#{msg['button.no']}" type="button" styleClass="ui-confirmdialog-no"  />
+    </p:confirmDialog>
+
+    <p:commandButton  value="#{msg['button.addNewStudent']}"
+                      ajax="true"
+                      action="#{simpleCrudBean.resetAdd}"
+                      actionListener="#{simpleCrudBean.resetAdd}"
+                      process="@this"
+
+                      type="button" onclick="PF('studentDialog').show(); PF('studentDialog').reset(); ">
+        <f:ajax execute="@this" />
+        <p:resetInput target="dialogForm" />
+        <f:param name="editStatus" value="#{false}" />
+    </p:commandButton>
+
+    <br/><br/>
+
+    <h:panelGroup rendered="#{empty simpleCrudBean.studentList}">
+        <p>No students! Please add students.</p>
+    </h:panelGroup>
+
+
+         <p:dialog id="popupDialog" global="true" header="#{msg['dialog.header']}" widgetVar="studentDialog" modal="true"
+                   closable="false" resizable="false" update="dialogForm" showEffect="fade" hideEffect="fade" >
+             <h:form id="dialogForm">
+                 <h4><p:outputLabel value="#{msg['dialog.label.addNewStudent']}" rendered="#{!simpleCrudBean.editStatus}"/></h4>
+                 <h4><p:outputLabel value="#{msg['dialog.label.editStudent']} #{simpleCrudBean.studentIns.id}"
+                                    rendered="#{simpleCrudBean.editStatus}"/></h4>
+            <h:panelGrid id="gridForm" columns="3" cellpadding="5">
+                <p:outputLabel for="dialogName" value="#{msg['dialog.label.name']}:" />
+                <p:inputText id="dialogName" value="#{simpleCrudBean.studentIns.firstName}" label="Firstname"
+                             placeholder="#{msg['dialog.placeholder.name']}"
+                             required="true"
+                             requiredMessage="#{msg['dialog.req.msg.name']}"
+                             validatorMessage="#{msg['dialog.valid.msg.name']}">
+                    <f:validateLength minimum="2" /></p:inputText>
+                <p:message id="dialogNameMsg" for="dialogName" />
+
+                <p:outputLabel for="dialogSurname" value="#{msg['dialog.label.surname']}:" />
+                <p:inputText id="dialogSurname" value="#{simpleCrudBean.studentIns.lastName}" label="Surname"
+                             placeholder="#{msg['dialog.placeholder.surname']}"
+                             required="true"
+                             requiredMessage="#{msg['dialog.req.msg.surname']}"
+                             validatorMessage="#{msg['dialog.valid.msg.surname']}">
+                    <f:validateLength minimum="2" /></p:inputText>
+                <p:message id="dialogSurnameMsg" for="dialogSurname" />
+
+                <p:outputLabel for="dialogBirthdate" value="#{msg['dialog.label.birthDate']}:" />
+                <p:calendar id="dialogBirthdate" value="#{simpleCrudBean.studentIns.birthDateAsDate}"
+                            pattern="yyyy-MM-dd" mask="true" size="10" timeZone="Europe/Vilnius"
+                            placeholder="#{msg['dialog.placeholder.birthDate']}"
+                            pagedate="2000-01-01" mindate="1900-01-01" maxdate="2009-12-31"
+                            autocomplete="true" tabindex="true" selectOtherMonths="true" navigator="true"
+                            required="true"
+                            requiredMessage="#{msg['dialog.req.msg.birthDate']}">
+                    <f:validator validatorId="lt.asw.jsfCRUD.backingBeans.DateValidator" />
+                </p:calendar>
+                <p:message id="dialogBirthdateMsg" for="dialogBirthdate" />
+
+
+                <p:commandButton value="#{msg['button.add']}" action="#{simpleCrudBean.add}" update="dialogForm studentTableForm"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed){ PF('studentDialog').hide()}"
+                                 rendered="#{!simpleCrudBean.editStatus}"  ajax="true" >
+                    <p:ajax execute="studentTableForm" render="studentTableForm" />
+                    <p:resetInput target="dialogForm" />
+                </p:commandButton>
+                <p:commandButton value="#{msg['button.reset']}" action="#{simpleCrudBean.resetAdd}" update="dialogForm" immediate="true" resetValues="true"
+                                 oncomplete=" PF('studentDialog').hide();"
+                                 rendered="#{!simpleCrudBean.editStatus}" ajax="true" >
+                                  <!--oncomplete=PF('studentDialog').reset(); - doesn't work-->
+                    <p:resetInput target="dialogForm" />
+                </p:commandButton>
+
+                <p:commandButton value="#{msg['button.save']}" actionListener="#{simpleCrudBean.saveEdit}" update="dialogForm studentTableForm"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed){ PF('studentDialog').hide()}"
+                                 rendered="#{simpleCrudBean.editStatus}" ajax="true">
+                    <f:param name="editStatus" value="#{true}" />
+                    <p:ajax execute="studentTableForm" render="studentTableForm" />
+                </p:commandButton>
+                <p:commandButton value="#{msg['button.cancel']}" actionListener="#{simpleCrudBean.cancelEdit}" update="dialogForm" immediate="true" resetValues="true"
+                                 oncomplete="{ PF('studentDialog').hide()}"
+                                 rendered="#{simpleCrudBean.editStatus}" ajax="true" >
+                    <!--immediate="true" - to escape validation-->
+                    <f:param name="editStatus" value="#{true}" />
+                </p:commandButton>
+
+                <h:inputHidden value="#{simpleCrudBean.studentIns.id}"/>
+
+            </h:panelGrid>
+        </h:form>
+        </p:dialog>
+
+</h:body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+  <title>Student - Input form</title>
+</h:head>
+
+<h:body>
+	<h:form>
+		First name: <h:inputText value="#{student.firstName}"></h:inputText>
+		
+		<br/> <br/>
+		
+		Last name: <h:inputText value="#{student.lastName}"></h:inputText>
+		
+		<br/> <br/>
+		
+		Country:
+		<h:selectOneMenu value="#{student.country}">
+			<f:selectItems value="#{student.countryOption}" />
+		</h:selectOneMenu>
+		
+		<br/> <br/>
+		 
+		<h:commandButton value="Submit" action="student_response"></h:commandButton>
+	</h:form>
+</h:body>
+
+</html>

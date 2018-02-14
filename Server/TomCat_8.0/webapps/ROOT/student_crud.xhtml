@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+  <title>Student - Input form</title>
+</h:head>
+
+<h:body>
+    <h3>List students</h3>
+    <h3>If you see this "Spiner box" <p:spinner size="6"/> "Prime Faces" are active.</h3>
+    <br/>
+    <h:form rendered="#{not empty simpleCrudBean.studentList}">
+        <p:dataTable value="#{simpleCrudBean.studentList}" var="item" binding="#{table}">
+            <p:column><f:facet name="header">Row Index</f:facet>#{table.rowIndex+1}</p:column>
+            <p:column><f:facet name="header">ID</f:facet>#{item.id}</p:column>
+            <p:column ><f:facet name="header">Name</f:facet>#{item.firstName}</p:column>
+            <p:column ><f:facet name="header">Surname</f:facet>#{item.lastName}</p:column>
+            <p:column style="text-align: center"><f:facet name="header">Birth date</f:facet>#{item.birthDate}</p:column>
+            <p:column style="text-align: center"><f:facet name="header">Action "Edit"</f:facet>
+                <p:commandButton value="edit" action="#{simpleCrudBean.edit(item)}" ajax="false"/>
+            </p:column>
+            <p:column style="text-align: center"><f:facet name="header">Action "Delete"</f:facet>
+                <p:commandButton value="delete" action="#{simpleCrudBean.delete(item)}" ajax="false"/>
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+    <h:panelGroup rendered="#{empty simpleCrudBean.studentList}">
+        <p>No students! Please add students.</p>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{!simpleCrudBean.editStatus}">
+        <h3>Add student</h3>
+        <h:form>
+            <p:messages id="msgs1" autoUpdate="true" />
+            <p>
+                Name: <p:inputText value="#{simpleCrudBean.studentIns.firstName}" required="true" label="Firstname"
+                                   placeholder="Name" validatorMessage="Name is requred and it must be two characters long at least">
+                <f:validateLength minimum="2" />  </p:inputText>
+               Surname: <p:inputText value="#{simpleCrudBean.studentIns.lastName}" required="true" label="Surname"
+                                     placeholder="Surname" validatorMessage="Surname is requred and it must be two characters long at least">
+                <f:validateLength minimum="2" />  </p:inputText>
+               <!--Birth date: <p:inputText value="#{simpleCrudBean.studentIns.birthDate}" required="true" label="DateOfBirth" size="10"-->
+                                        <!--placeholder="YYYY-MM-DD" validatorMessage="Date of birth is requred and it must have valid format: 'YYYY-MM-DD'">-->
+                Birth date: <p:calendar id="mask" value="#{simpleCrudBean.studentIns.birthDate}" pattern="yyyy-MM-dd" mask="true" >
+                <f:validateLength minimum="10" />
+                <!--<f:validateRegex pattern = "([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))" />-->
+                           </p:calendar><!--</p:inputText>-->
+            </p>
+            <p>
+
+                <p:commandButton value="add" action="#{simpleCrudBean.add}" ajax="false"/>
+                <p:commandButton value="reset" immediate="true" action="#{simpleCrudBean.resetAdd}" ajax="false"  />
+                <!-- immediate="true" - to escape validation-->
+            </p>
+        </h:form>
+    </h:panelGroup>
+    
+    <h:panelGroup rendered="#{simpleCrudBean.editStatus}">
+        <h3>Edit student Id: <h:outputText value = "#{simpleCrudBean.studentIns.id}" /> </h3>
+        <!--<h3>Edit studentInsId <f:param name="#{studentInsId}" /> </h3>-->
+        <h:form>
+            <p:messages id="msgs2" />
+            <!--<h3>Edit student Id: <p:inputText value="#{simpleCrudBean.studentIns.id}" required="true" readonly="true" size="3"/> </h3>-->
+            <p> First name: <p:inputText value="#{simpleCrudBean.studentIns.firstName}" required="true" label="Firstname"
+                                        validatorMessage="Name is requred and it must be two characters long at least">
+                <f:validateLength minimum="2" />  </p:inputText>
+                Surname: <p:inputText value="#{simpleCrudBean.studentIns.lastName}" required="true" label="Surname"
+                                      validatorMessage="Surname is requred and it must be two characters long at least">
+                <f:validateLength minimum="2" />  </p:inputText>
+               Birth date: <p:inputText value="#{simpleCrudBean.studentIns.birthDate}" required="true" label="DateOfBirth" size="10"
+                                        validatorMessage="Date of birth is requred and it must have valid format: 'YYYY-MM-DD'">
+                <f:validateLength minimum="2" />
+                <f:validateRegex pattern = "([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))" /></p:inputText>
+                <h:inputHidden value="#{simpleCrudBean.studentIns.id}"/>
+                <!--<f:param name="studentInsId" value="#{simpleCrudBean.studentIns.id}" />-->
+            </p>
+            <p>
+                <p:commandButton value="save" action="#{simpleCrudBean.saveEdit}" ajax="false">
+                    <f:param name="editStatus" value="#{true}" />
+                </p:commandButton>
+                <p:commandButton value="cancel" immediate="true" action="#{simpleCrudBean.cancelEdit}" ajax="false">
+                     <!--immediate="true" - to escape validation-->
+                    <f:param name="editStatus" value="#{true}" />
+                </p:commandButton>
+            </p>
+        </h:form>
+    </h:panelGroup>
+
+</h:body>
+
+</html>
