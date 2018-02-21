@@ -10,11 +10,12 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.ViewScoped;
 import javax.faces.event.ActionEvent;
 
 
 @ManagedBean   (eager = true)
-@RequestScoped //@SessionScoped   @RequestScoped
+@RequestScoped //@RequestScoped //@SessionScoped   @RequestScoped
 public class SimpleCrudBean {
 
     private static List<Student> studentList;
@@ -24,7 +25,7 @@ public class SimpleCrudBean {
     //private StudentDao studentDaoIns = new StudentLocalDaoImpl();
     private Student studentIns = new Student();
     private Student beforeEditStudent = null;
-    private String localeCode;
+
 
     @ManagedProperty(value="#{param.editStatus}")
     private boolean editStatus;
