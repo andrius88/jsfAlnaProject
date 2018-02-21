@@ -7,8 +7,9 @@
         version="2.0">
     <application>
         <locale-config>
-            <supported-locale>en</supported-locale>
             <supported-locale>lt</supported-locale>
+            <supported-locale>en</supported-locale>
+
         </locale-config>
         <resource-bundle>
             <base-name>lt.asw.jsfCRUD.student</base-name>
