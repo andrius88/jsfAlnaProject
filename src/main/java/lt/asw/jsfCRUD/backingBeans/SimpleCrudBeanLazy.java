@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-@ManagedBean
+@ManagedBean (eager = true)
 @ViewScoped
 
 public class SimpleCrudBeanLazy {
@@ -26,7 +26,7 @@ public class SimpleCrudBeanLazy {
 
     private StudentLazyDataModel studentLazyIns;
 
-    //    @ManagedProperty(value="#{param.editStatus}")
+    // editStatus indicates if record is being edited
     private boolean editStatus;
 
     // Constructor
