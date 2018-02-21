@@ -38,8 +38,9 @@
             </p:selectOneMenu>
         </h:panelGrid>
 
-        <p:dataTable id="studentTable" value="#{simpleCrudBean.studentList}" var="item" binding="#{table}"
-                     paginator="true" rows="10"
+        <p:dataTable id="studentTable" binding="#{table}"
+                     var="item" value="#{simpleCrudBean.studentList}" rows="10"
+                     paginator="true"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      rowsPerPageTemplate="5,10,15">
             <p:column headerText="#{msg['studentTable.column.rowIndex']}">
@@ -59,7 +60,7 @@
             </p:column>
             <p:column style="text-align: center">
                 <f:facet name="header"><h:outputText value="#{msg['studentTable.column.edit']}" /></f:facet>
-                <p:commandButton value="#{msg['button.edit']}" actionListener="#{simpleCrudBean.edit(item)}" ajax="true"
+                <p:commandButton value="#{msg['button.edit']}" actionListener="#{simpleCrudBean.edit(item)}"
                                  update="dialogForm" oncomplete="PF('studentDialog').show();"
                                  style="width:115px;height:35px">
                 </p:commandButton>
@@ -67,7 +68,6 @@
             <p:column style="text-align: center">
                 <f:facet name="header"><h:outputText value="#{msg['studentTable.column.delete']}" /></f:facet>
                 <p:commandButton id="deleteButton" value="#{msg['button.delete']}" actionListener="#{simpleCrudBean.delete(item)}"
-                                 ajax="true"
                                  update="studentTableForm:studentTable"
                                  style="width:115px;height:35px">
                 <p:confirm header="#{msg['confirmation.header']}" message="#{msg['confirmation.msg']} #{item.id} ?" icon="ui-icon-alert" />
@@ -76,6 +76,13 @@
             </p:column>
 
         </p:dataTable>
+        <br/>
+        <p:commandButton  value="#{msg['button.addNewStudent']}"
+                          action="#{simpleCrudBean.resetAdd()}"
+                          type="submit" oncomplete="PF('studentDialog').show()">
+            <p:resetInput target="dialogForm" />
+            <f:param name="editStatus" value="#{false}" />
+        </p:commandButton>
     </h:form>
 
     <br/><br/>
@@ -86,17 +93,13 @@
         <p:commandButton value="#{msg['button.no']}" type="button" styleClass="ui-confirmdialog-no"  />
     </p:confirmDialog>
 
-    <p:commandButton  value="#{msg['button.addNewStudent']}"
-                      ajax="true"
-                      action="#{simpleCrudBean.resetAdd}"
-                      actionListener="#{simpleCrudBean.resetAdd}"
-                      process="@this"
 
-                      type="button" onclick="PF('studentDialog').show(); PF('studentDialog').reset(); ">
-        <f:ajax execute="@this" />
-        <p:resetInput target="dialogForm" />
-        <f:param name="editStatus" value="#{false}" />
-    </p:commandButton>
+
+    <!--onclick="PF('studentDialog').show(); PF('studentDialog').reset(); "-->
+    <!--process="@this"-->
+    <!--<f:ajax execute="@this" />-->
+    <!--<p:resetInput target="dialogForm" />-->
+    <!--<f:param name="editStatus" value="#{false}" />-->
 
     <br/><br/>
 
@@ -149,11 +152,12 @@
                     <p:ajax execute="studentTableForm" render="studentTableForm" />
                     <p:resetInput target="dialogForm" />
                 </p:commandButton>
-                <p:commandButton value="#{msg['button.reset']}" action="#{simpleCrudBean.resetAdd}" update="dialogForm" immediate="true" resetValues="true"
+                <p:commandButton value="#{msg['button.reset']}"  update="dialogForm" immediate="true" resetValues="true"
                                  oncomplete=" PF('studentDialog').hide();"
                                  rendered="#{!simpleCrudBean.editStatus}" ajax="true" >
                                   <!--oncomplete=PF('studentDialog').reset(); - doesn't work-->
                     <p:resetInput target="dialogForm" />
+
                 </p:commandButton>
 
                 <p:commandButton value="#{msg['button.save']}" actionListener="#{simpleCrudBean.saveEdit}" update="dialogForm studentTableForm"
@@ -164,7 +168,7 @@
                 </p:commandButton>
                 <p:commandButton value="#{msg['button.cancel']}" actionListener="#{simpleCrudBean.cancelEdit}" update="dialogForm" immediate="true" resetValues="true"
                                  oncomplete="{ PF('studentDialog').hide()}"
-                                 rendered="#{simpleCrudBean.editStatus}" ajax="true" >
+                                 rendered="#{simpleCrudBean.editStatus}" type="submit">
                     <!--immediate="true" - to escape validation-->
                     <f:param name="editStatus" value="#{true}" />
                 </p:commandButton>
