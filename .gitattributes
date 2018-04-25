@@ -1,0 +1,2 @@
+Server/TomCat_8.0/bin/*.sh linguist-vendored
+Server/TomCat_8.0/bin/*.bat linguist-vendored
